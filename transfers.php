@@ -81,7 +81,7 @@
 
 $to = $email_address;
 $subject = "Account Information";
-$txt = "Your outward payment of $amount has been initiated, please allow for 72 working hours for deposit to reflect. Thanks.";
+$txt = "Your outward payment of $amount has been initiated, please allow for 72 working hours this to reflect. Thanks.";
 $headers = "From: no-reply@tmconline.site" . "\r\n" .
 "CC: no-reply@tmconline.site";
 
