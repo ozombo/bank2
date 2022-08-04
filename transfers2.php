@@ -13,12 +13,6 @@
    $rs_settings = mysql_query("select * from userz where id='$_SESSION[user_id]'");
    $row = mysql_fetch_array($rs_settings);
    $name = $row["name"];
-   $account_number = $row["account_number"];
-   $state = $row["state"];
-   $country = $row["country"];
-   $zip = $row["zip"];
-   $city = $row["city"];
-   $year = $row["year"];
 
    $total_txn_query = mysql_query("select COUNT(*) from incoming where receiver='$_SESSION[user_id]'");
    list($total_txn) = mysql_fetch_row($total_txn_query);
@@ -36,16 +30,37 @@
    $o_balance_row = mysql_fetch_assoc($outgoing_balance); 
    $debit_balance = $o_balance_row['outgoing_balance'];
 
-   $outstanding_balance = mysql_query("select SUM(amount) AS outstanding_balance FROM incoming WHERE `receiver` = '$_SESSION[user_id]' AND status > 1") or die(mysql_error());
+   $outstanding_balance = mysql_query("select SUM(amount) AS outstanding_balance FROM incoming WHERE `receiver` = '$_SESSION[user_id]' AND status !='1'") or die(mysql_error());
    $out_balance_row = mysql_fetch_assoc($outstanding_balance); 
    $gotten_out_balance = number_format($out_balance_row['outstanding_balance']);
 
    $book_balance = number_format($gotten_balance - $debit_balance);
   //  $percentChange = (1 - $gotten_balance / $debit_balance ) * 100;
 
-  $get_transactions = mysql_query("select * from incoming WHERE `receiver` = '$_SESSION[user_id]' order by id DESC LIMIT 10") or die(mysql_error());
-
-  $debit_transactions = mysql_query("select * from outgoing WHERE `sender` = '$_SESSION[user_id]' order by id DESC LIMIT 10") or die(mysql_error());
+   // Add new account
+ if (isset($_POST['send']))
+ { 
+ 
+ 
+ 
+ 
+ if(empty($_POST['receiver_account']) OR 
+    empty($_POST['swift_code']) OR 
+    empty($_POST['amount']) OR 
+    empty($_POST['email_address']) ) {
+ 
+ 
+ $msg = urlencode("Fund transfer error! You have left important fields empty. Please start over.");
+ header("Location: transfers.php?msg=$msg&type=error");
+ } else {
+ 
+ 
+ 
+ 
+ header("Location: transfers2.php?msg");
+ 
+   } 
+ }
 
 
 
@@ -59,7 +74,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <title>
-   <?php echo"$appname"; ?> | Accounts Dashboard
+  <?php echo"$appname"; ?> | Transactions Overview
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -152,10 +167,8 @@
         
         
       </ul>
-      
     </div>
     <div class="sidenav-footer mx-3 ">
-      
       <div class="card card-background shadow-none card-background-mask-secondary" id="sidenavCard">
         <div class="full-background" style="background-image: url('assets/img/curved-images/white-curved.jpg')"></div>
         <div class="card-body text-start p-3 w-100">
@@ -173,14 +186,14 @@
     </div>
   </aside>
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-    <!-- Navbar -->
-    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+     <!-- Navbar -->
+     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
       <div class="container-fluid py-1 px-3">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
            
           </ol>
-          <h6 class="font-weight-bolder mb-0">Account Overview</h6>
+          <h6 class="font-weight-bolder mb-0">Transfers</h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
           <div class="ms-md-auto pe-md-3 d-flex align-items-center">
@@ -217,228 +230,76 @@
     </nav>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
+ 
       <div class="row">
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Book Balance</p>
-                    <h5 class="font-weight-bolder mb-0">
-                      $<?php echo "$book_balance";?>
-                      <span class="text-success text-sm font-weight-bolder">+3%</span>
-                    </h5>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Outstanding Balance</p>
-                    <h5 class="font-weight-bolder mb-0">
-                    $<?php echo "$gotten_out_balance";?>
-                      
-                    </h5>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                    <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-          <div class="card">
-            <div class="card-body p-3">
-              <div class="row">
-                <div class="col-8">
-                  <div class="numbers">
-                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Total transactions</p>
-                    <h5 class="font-weight-bolder mb-0">
-                    <?php echo "$total_txn";?>
-                      
-                    </h5>
-                  </div>
-                </div>
-                <div class="col-4 text-end">
-                  <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                    <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-4">
-        <div class="col-lg-7 mb-lg-0 mb-4">
-        <div class="card bg-transparent shadow-xl">
-                <div class="overflow-hidden position-relative border-radius-xl" style="background-image: url('assets/img/curved-images/curved14.jpg');">
-                  <span class="mask bg-gradient-dark"></span>
-                  <div class="card-body position-relative z-index-1 p-3">
-                    <i class="fas fa-wifi text-white p-2"></i>
-                    <h5 class="text-white mt-4 mb-5 pb-2">Account Number: <?php echo "$account_number"; ?> - <?php echo "$name"; ?></h5>
-                    <div class="d-flex">
-                      <div class="d-flex">
-                        <div class="me-4">
-                          <p class="text-white text-sm opacity-8 mb-0">Location</p>
-                          <h6 class="text-white mb-0"><?php echo "$city-$state-$zip, $country"; ?></h6>
-                        </div>
-                        <div>
-                          <p class="text-white text-sm opacity-8 mb-0">Account year</p>
-                          <h6 class="text-white mb-0"><?php echo "$year"; ?></h6>
-                        </div>
-                      </div>
-                      <div class="ms-auto w-20 d-flex align-items-end justify-content-end">
-                        <img class="w-60 mt-2" src="assets/img/logos/mastercard.png" alt="logo">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="card h-100 p-3">
-            <div class="overflow-hidden position-relative border-radius-lg 100 h-100" style="background-image: url('assets/img/ivancik.jpg');">
+        <div class="col-12">
+        <div class="card mt-4" id="password">
+<div class="card-header">
+<?php 
+        // handle header message after action
+        if (isset($_GET["msg"])) {?>
+   <div class="card h-100 p-3">
+            <div class="overflow-hidden position-relative border-radius-lg 100 h-100" style="background-color: red;">
               <span class="mask bg-gradient-dark"></span>
               <div class="card-body position-relative z-index-1 d-flex flex-column h-100 p-3">
-                <h5 class="text-white font-weight-bolder mb-4 pt-2">Insurance when you 
-need it most.</h5>
-                <p class="text-white">When you purchase a new <?php echo "$appname"; ?> Home and Contents policy by 31 December 2022, you'll go into the draw for a chance to win a $10,000.*</p>
+                <h5 class="text-white font-weight-bolder mb-4 pt-2">Your account has been flagged.</h5>
+                <p class="text-white">When you purchase a new <?php echo "$appname"; ?> Due to some security policies andc concerns, the recent transaction on your account has caused us to put a hold and flag your account, please contact your account officer for resolution.</p>
                
               </div>
             </div>
           </div>
-        </div>
-      </div>
-  <br />
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Recent transactons</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Sender</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Amount</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  <?php while ($transactionsrow = mysql_fetch_array($get_transactions)) {
-      $sender = $transactionsrow['sender'];
-      $amount = number_format($transactionsrow['amount']);
-      $date = $transactionsrow['date'];
-      $status = $transactionsrow['status'];
-    ?>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                         
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm"><?php echo "$sender"; ?></h6>
-                           
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">$<?php echo "$amount"; ?></p>
-                       
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                        <?php if ($status == 1) { ?>
-                        <span class="badge badge-sm bg-gradient-success">Cleared</span>
-                        <?php } else { ?>
-                          <span class="badge badge-sm bg-gradient-danger">Pending</span>
-                          <?php } ?>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold"><?php echo "$date"; ?></span>
-                      </td>
-                      
-                    </tr>
-                  <?php } ?>  
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0">
-              <h6>Outgoing transactons</h6>
-            </div>
-            <div class="card-body px-0 pt-0 pb-2">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Beneficiary</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Amount</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Receiver Account</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Swift Code</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  <?php while ($debittransactionsrow = mysql_fetch_array($debit_transactions)) {
-      $receiver = $debittransactionsrow['receiver_name'];
-      $amount = number_format($debittransactionsrow['amount']);
-      $receiver_account = $debittransactionsrow['receiver_account'];
-      $swift_code = $debittransactionsrow['swift_code'];
-    ?>
-                    <tr>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                         
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm"><?php echo "$receiver"; ?></h6>
-                           
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <p class="text-xs font-weight-bold mb-0">$<?php echo "$amount"; ?></p>
-                       
-                      </td>
-                      <td class="align-middle text-center text-sm">
-                      <p class="text-xs font-weight-bold mb-0"><?php echo "$receiver_account"; ?></p>
-                      </td>
-                      <td class="align-middle text-center">
-                        <span class="text-secondary text-xs font-weight-bold"><?php echo "$swift_code"; ?></span>
-                      </td>
-                      
-                    </tr>
-                  <?php } ?>  
-                    
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+<?php } ?>
+<?php 
+        // handle header message after action
+        if (!isset($_GET["msg"])) {?>
+<h5>Initiate Transfer</h5>
+</div>
+<div class="card-body pt-0">
+<form action="" method = "POST">
+<label class="form-label">Beneficiary Account Number</label>
+<div class="form-group">
+<input name = "receiver_account" maxlength="10" id = "receiver_account" class="form-control" type="text" placeholder="" onfocus="focused(this)" onfocusout="defocused(this)">
+</div>
+<label class="form-label">Swift Code</label>
+<div class="form-group">
+<input name = "swift_code" id = "swift_code" class="form-control" type="text" placeholder="" onfocus="focused(this)" onfocusout="defocused(this)">
+ </div>
+ <label class="form-label">Beneficiary Name</label>
+<div class="form-group">
+<input name = "receiver_name" id = "receiver_name" class="form-control" type="text" placeholder="" onfocus="focused(this)" onfocusout="defocused(this)">
+ </div>
+ <label class="form-label">Amount (Balance: $<?php echo "$book_balance"; ?>)</label>
+<div class="form-group">
+<input name = "amount" id = "amount" class="form-control" type="text" placeholder="" onfocus="focused(this)" onfocusout="defocused(this)">
+ </div>
+ <label class="form-label">Your Email Address</label>
+<div class="form-group">
+<input name = "email_address" id = "email_address" class="form-control" type="text" placeholder="" onfocus="focused(this)" onfocusout="defocused(this)">
+ </div>
+<h5 class="mt-5">Important Information</h5>
+<p class="text-muted mb-2">
+Please read the information below carefully.
+</p>
+<ul class="text-muted ps-4 mb-0 float-start">
+<li>
+<span class="text-sm">Your account will be debited immediately</span>
+</li>
+<li>
+<span class="text-sm">Make sure you fill the information below correctly</span>
+</li>
+<li>
+<span class="text-sm">A confirmation will be sent to the email address provided above</span>
+</li>
+<li>
+<span class="text-sm">Please double check before confirming transfer</span>
+</li>
+</ul>
+<button name = "send" type = "submit" class="btn bg-gradient-dark btn-sm float-end mt-6 mb-0">Transfer</button>
+</div>
+</form>
+</div>
+<?php } ?>
         </div>
       </div>
       <footer class="footer pt-3  ">
