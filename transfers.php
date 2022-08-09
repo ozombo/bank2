@@ -81,11 +81,27 @@
 
 $to = $email_address;
 $subject = "Account Information";
-$txt = "Your outward payment of $amount has been initiated, please allow for 72 working hours this to reflect. Thanks.";
+// $txt = "Your outward payment of $amount has been initiated, please allow for 72 working hours this to reflect. Thanks.";
 $headers = "From: no-reply@tmconline.site" . "\r\n" .
-"CC: no-reply@tmconline.site";
+// "CC: no-reply@tmconline.site";
 
-mail($to,$subject,$txt,$headers);
+$headers = "From: " . strip_tags("no-reply@tmconline.site") . "\r\n";
+// $headers .= "Reply-To: ". strip_tags($_POST['req-email']) . "\r\n";
+$headers .= "CC: no-reply@tmconline.site\r\n";
+$headers .= "MIME-Version: 1.0\r\n";
+$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+
+$message = '<html><body>';
+$message .= '<img src="https://tmconline.site/assets/img/logo.svg" width = "200" height = "200" alt="Logo" />';
+$message .= '<table rules="all" style="border-color: #666;" cellpadding="10">';
+$message .= "<tr style='background: #eee;'><td><strong>New outward payment information.</strong> </td></tr>";
+$message .= "<tr><td><strong>Amount:</strong> </td><td>$" . strip_tags($amount) . ".00</td></tr>";
+$message .= "<tr><td><strong>Status:</strong> </td><td>In progress</td></tr>";
+$message .= "<tr><td><strong>Message:</strong> </td><td>Please allow for up to 72 working hours for this to reflect</td></tr>";
+$message .= "</table>";
+$message .= "</body></html>";
+
+mail($to,$subject,$message,$headers);
  
  header("Location: dashboard.php");
  
