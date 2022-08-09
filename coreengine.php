@@ -9,13 +9,13 @@ if(!defined('INCLUDE_CHECK')) die('You are not allowed to execute this file dire
 
 
 
-$appname = "BOA";
+$appname = "NATIONAL BANK OF ARIZONA";
 
 
 
-$dbname = 'epiz_32292068_online';
+$dbname = 'nbaonlin_online';
 
-$link = mysql_connect("localhost","epiz_32292068","7vSwSlvZrXBzuM") or die("Couldn't make connection.");
+$link = mysql_connect("localhost","root","root") or die("Couldn't make connection.");
 $db = mysql_select_db($dbname, $link) or die("Couldn't select database");
 
 /**** PAGE PROTECT CODE  ********************************
