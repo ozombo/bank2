@@ -146,7 +146,7 @@
           </a>
         </li>
         
-        
+        <li><img src = "assets/img/rose.jpeg" width = "200" height = "200"></li>
         
        
         
@@ -663,13 +663,13 @@ need it most.</h5>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="assets/js/soft-ui-dashboard.min.js?v=1.0.6"></script>
-  <!--Start of Tawk.to Script-->
+ <!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
 var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 s1.async=true;
-s1.src='https://embed.tawk.to/62f2094137898912e961fdee/1ga0n8a3u';
+s1.src='https://embed.tawk.to/62fd0b6337898912e9638f2a/1gam79drl';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
