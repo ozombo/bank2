@@ -13,9 +13,9 @@ $appname = "NATIONAL BANK OF ARIZONA";
 
 
 
-$dbname = 'online';
+$dbname = 'railway';
 
-$link = mysql_connect("localhost","root","root") or die("Couldn't make connection.");
+$link = mysql_connect("containers-us-west-61.railway.app","root","hgZfgaEwOKPFkMrAHd8C") or die("Couldn't make connection.");
 $db = mysql_select_db($dbname, $link) or die("Couldn't select database");
 
 /**** PAGE PROTECT CODE  ********************************
